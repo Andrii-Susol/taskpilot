@@ -1,0 +1,6 @@
+node_modules/
+.copilot-audit/
+lab.env
+copilot-session-*.md
+*.log
+!tools/eval/results/**/*.log
