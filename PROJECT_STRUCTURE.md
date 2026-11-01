@@ -1,0 +1,25 @@
+# Project structure
+
+- src/: application runtime; all server logic lives here.
+  - src/server.js: starts the Node HTTP server and binds to PORT.
+  - src/app.js: request parsing, routing, validation, and HTTP response handling.
+  - src/router.js: minimal path matcher for static and `:param` routes.
+  - src/store.js: in-memory task data model, validation, and CRUD logic.
+  - src/routes/tasks.js: task endpoints (`/health`, `/tasks`, `/tasks/:id`).
+- tests/: automated verification; Node test suite for API behavior.
+  - tests/tasks.test.js: endpoint and validation cases.
+  - tests/helpers.js: shared test utilities.
+- scripts/: operational helpers for setup and validation.
+  - scripts/smoke-test.sh: quick app sanity check.
+  - scripts/seed-tasks.sh: example task data seeding.
+- docs/: documentation and project artifacts.
+  - docs/metrics/credit-log.md: operational metrics log.
+- .github/: repository automation and agent metadata.
+  - .github/workflows/ci.yml: CI pipeline.
+  - .github/agents/proper-agent.agent.md: agent instructions.
+- README.md: main project overview, run commands, and API summary.
+- package.json: package metadata, Node engine, and npm scripts.
+- lab.env / lab.env.example: environment configuration for local runs.
+- SECURITY.md: security reporting guidance.
+- .nvmrc: pinned Node version for local development.
+- .gitignore: excludes generated or local files.
