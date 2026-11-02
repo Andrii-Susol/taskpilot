@@ -1,0 +1,16 @@
+# CODEOWNERS - the LAST matching pattern wins. Patterns are case-sensitive.
+# All owners for a pattern MUST be on the same line.
+# Personal account: every owner is Andrii-Susol. In an organization you would use teams, e.g.
+#   /.github/workflows/   @my-org/platform-team @my-org/security-team
+
+# Global default
+*                         @Andrii-Susol
+
+# Governance and CI/CD (agents must not change these)
+/.github/workflows/       @Andrii-Susol
+/.github/agents/          @Andrii-Susol
+/.github/CODEOWNERS       @Andrii-Susol
+/SECURITY.md              @Andrii-Susol
+
+# Application source
+/src/                     @Andrii-Susol
