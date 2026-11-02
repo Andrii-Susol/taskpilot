@@ -1,5 +1,6 @@
 // Read-only observer session: logs every tool call through SDK hooks and denies anything
-// that is not a read. Usage: node tools/sdk-observer/observe.mjs "your prompt"
+// that is not a read. Usage: node tools/sdk-observer/observe.mjs 
+
 import { CopilotClient } from '@github/copilot-sdk';
 import { appendFileSync, mkdirSync } from 'node:fs';
 
