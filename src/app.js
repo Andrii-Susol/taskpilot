@@ -49,16 +49,24 @@ export function createApp({ store = createStore() } = {}) {
         return send(res, methodNotAllowed ? 405 : 404, { error: methodNotAllowed ? 'Method not allowed' : 'Not found' });
       }
       const raw = ['POST', 'PATCH', 'PUT'].includes(req.method) ? await readBody(req) : '';
-      // KNOWN BUG (fixed in Lab 1.2): malformed JSON throws a SyntaxError that falls
-      // through to the generic 500 branch and leaks the error message to the client.
-      const body = raw ? JSON.parse(raw) : undefined;
+      let body;
+      if (raw) {
+        try {
+          body = JSON.parse(raw);
+        } catch (err) {
+          if (err instanceof SyntaxError) {
+            return send(res, 400, { error: 'Malformed JSON body' });
+          }
+          throw err;
+        }
+      }
       const result = await route({ req, params, query: url.searchParams, body });
       return send(res, result.status, result.body);
     } catch (err) {
       if (err instanceof ValidationError) {
         return send(res, 400, { error: err.message });
       }
-      return send(res, 500, { error: 'Internal Server Error', detail: err.message });
+      return send(res, 500, { error: 'Internal Server Error' });
     }
   };
 }
