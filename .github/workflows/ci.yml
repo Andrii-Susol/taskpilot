@@ -1,6 +1,4 @@
 # Governed by CODEOWNERS - changes need owner review
-# Governed by CODEOWNERS - changes need owner review
-# Governed by CODEOWNERS - changes need owner review
 name: CI
 on:
   push:
