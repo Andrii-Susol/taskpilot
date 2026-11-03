@@ -37,13 +37,22 @@ function send(res, status, body) {
   res.end(payload);
 }
 
-export function createApp({ store = createStore() } = {}) {
+export function createApp({ store = createStore(), rateLimiter = null, exempt = ['/health'] } = {}) {
   const router = createRouter();
   registerTaskRoutes(router, store);
 
   return async function handler(req, res) {
     const url = new URL(req.url, 'http://localhost');
     try {
+      if (rateLimiter && !exempt.includes(url.pathname)) {
+        const verdict = rateLimiter(req);
+        res.setHeader('x-ratelimit-limit', verdict.limit);
+        res.setHeader('x-ratelimit-remaining', verdict.remaining);
+        if (!verdict.allowed) {
+          res.setHeader('retry-after', verdict.retryAfterSeconds);
+          return send(res, 429, { error: 'Too many requests' });
+        }
+      }
       const { handler: route, params, methodNotAllowed } = router.match(req.method, url.pathname);
       if (!route) {
         return send(res, methodNotAllowed ? 405 : 404, { error: methodNotAllowed ? 'Method not allowed' : 'Not found' });
