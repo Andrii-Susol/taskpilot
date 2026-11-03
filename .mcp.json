@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "taskpilot": {
+      "type": "local",
+      "command": "node",
+      "args": ["tools/mcp-taskpilot/server.mjs"],
+      "env": {
+        "TASKPILOT_URL": "http://localhost:3000"
+      },
+      "tools": ["*"]
+    },
+    "github-issues-ro": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/x/issues/readonly",
+      "tools": [
+        "*"
+      ],
+      "headers": {
+        "Authorization": "Bearer ${GITHUB_MCP_PAT}"
+      }
+    }
+  }
+}
