@@ -7,7 +7,7 @@
       "env": {
         "TASKPILOT_URL": "http://localhost:3000"
       },
-      "tools": ["*"]
+      "tools": ["get_health", "list_tasks"]
     },
     "github-issues-ro": {
       "type": "http",
