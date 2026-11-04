@@ -1,0 +1,12 @@
+{
+  "inputs": [
+    {
+      "id": "github_mcp_pat",
+      "type": "promptString",
+      "description": "Fine-grained PAT (Issues: read-only, this repo only)",
+      "password": true
+    }
+  ],
+  "servers": {
+  }
+}
