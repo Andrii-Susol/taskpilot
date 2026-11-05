@@ -14,3 +14,10 @@
 
 # Application source
 /src/                     @Andrii-Susol
+
+# Agent memory and steering files are governance too
+/AGENTS.md                        @Andrii-Susol
+/.github/copilot-instructions.md  @Andrii-Susol
+/.github/instructions/            @Andrii-Susol
+/.github/skills/                  @Andrii-Susol
+/scripts/                         @Andrii-Susol
