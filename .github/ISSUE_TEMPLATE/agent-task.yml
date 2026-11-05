@@ -1,0 +1,22 @@
+name: Agent task
+description: A scoped task suitable for Copilot cloud agent
+labels: [agent-task]
+body:
+  - type: textarea
+    id: goal
+    attributes: { label: Goal, description: One or two sentences. }
+    validations: { required: true }
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable checkboxes. The agent must satisfy every one.
+      value: "- [ ] "
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: In scope (paths), value: "- " }
+    validations: { required: true }
+  - type: textarea
+    id: out-of-scope
+    attributes: { label: Out of scope, value: "- .github/**\n- src/**" }
