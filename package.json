@@ -4,10 +4,15 @@
   "private": true,
   "description": "TaskPilot - a tiny zero-dependency task API used as the GH-600 agentic lab project",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "node src/server.js",
     "test": "node --test",
     "test:coverage": "node --test --experimental-test-coverage"
+  },
+  "dependencies": {
+    "lodash": "4.17.15"
   }
 }
