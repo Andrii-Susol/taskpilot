@@ -1,0 +1,62 @@
+name: Agent Eval Gate
+on:
+  pull_request:          # no paths-ignore: every job here is a required check
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write          # post a summary comment on failure
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: moderate
+          comment-summary-in-pr: on-failure
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - name: Tests with coverage thresholds
+        run: >
+          node --test --experimental-test-coverage
+          --test-coverage-lines=85 --test-coverage-branches=75 --test-coverage-functions=85
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - name: shellcheck all scripts
+        run: |
+          mapfile -t files < <(git ls-files '*.sh')
+          echo "Checking ${#files[@]} script(s)"
+          [ ${#files[@]} -eq 0 ] || shellcheck "${files[@]}"
+
+  codeowners-valid:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CODEOWNERS has no errors on this branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          REF: ${{ github.head_ref }}    # passed via env, never interpolated into the script (injection-safe)
+        run: |
+          errors=$(gh api "repos/${REPO}/codeowners/errors?ref=${REF}" --jq '.errors | length')
+          echo "CODEOWNERS errors: ${errors}"
+          gh api "repos/${REPO}/codeowners/errors?ref=${REF}" --jq '.errors[] | "line \(.line): \(.message)"'
+          test "${errors}" -eq 0
