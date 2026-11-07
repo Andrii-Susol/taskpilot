@@ -1,3 +1,5 @@
+# Workflow to perform a failure drill using the Copilot CLI
+
 name: Failure Drill
 on:
   workflow_dispatch:
