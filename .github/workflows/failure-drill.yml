@@ -1,0 +1,16 @@
+name: Failure Drill
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  drill:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+      - name: Run agent with a non-existent flag (tool misuse)
+        run: copilot -p "Verify task compliance" --fast-mode
