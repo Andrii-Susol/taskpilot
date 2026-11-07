@@ -18,6 +18,25 @@ export function registerTaskRoutes(router, store) {
 
   router.add('POST', '/tasks', ({ body }) => ({ status: 201, body: store.create(body) }));
 
+  router.add('GET', '/tasks/stats', () => {
+    const tasks = store.list();
+    const byStatus = {
+      todo: 0,
+      'in-progress': 0,
+      done: 0,
+    };
+    tasks.forEach((task) => {
+      byStatus[task.status]++;
+    });
+    return {
+      status: 200,
+      body: {
+        total: tasks.length,
+        byStatus,
+      },
+    };
+  });
+
   router.add('GET', '/tasks/:id', ({ params }) => {
     const task = store.get(params.id);
     return task ? { status: 200, body: task } : { status: 404, body: { error: 'Task not found' } };
