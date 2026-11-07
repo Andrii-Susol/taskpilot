@@ -13,3 +13,6 @@
 ## Pull requests
 - Title: conventional commit style (`feat:`, `fix:`, `docs:`, `test:`, `chore:`).
 - Body: what changed, why, how it was tested (paste the `npm test` summary line).
+## Evidence rule
+When stating facts about this repository, cite `file:line`. If you cannot find evidence with
+search/read tools, say "not found in the repository" instead of guessing.
