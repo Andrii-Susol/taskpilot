@@ -13,6 +13,27 @@ export class ValidationError extends Error {
 export function createStore() {
   const tasks = new Map();
 
+  function isValidCalendarDate(dateStr) {
+    // Check if dateStr is a string matching YYYY-MM-DD format
+    if (typeof dateStr !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+      return false;
+    }
+    
+    // Parse the date and validate it's a real calendar date
+    const date = new Date(dateStr + 'T00:00:00Z');
+    if (Number.isNaN(date.getTime())) {
+      return false;
+    }
+    
+    // Round-trip validate: extract year/month/day and verify they match
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(date.getUTCDate()).padStart(2, '0');
+    const roundTripped = `${year}-${month}-${day}`;
+    
+    return roundTripped === dateStr;
+  }
+
   function validate(input, { partial = false } = {}) {
     if (input === null || typeof input !== 'object' || Array.isArray(input)) {
       throw new ValidationError('Body must be a JSON object');
@@ -27,6 +48,11 @@ export function createStore() {
     }
     if ('status' in input && !STATUSES.includes(input.status)) {
       throw new ValidationError(`status must be one of: ${STATUSES.join(', ')}`);
+    }
+    if ('dueDate' in input && input.dueDate !== null) {
+      if (!isValidCalendarDate(input.dueDate)) {
+        throw new ValidationError('dueDate must be a valid date in YYYY-MM-DD format or null');
+      }
     }
   }
 
@@ -45,6 +71,7 @@ export function createStore() {
         id: randomUUID(),
         title: input.title.trim(),
         status: input.status ?? 'todo',
+        dueDate: input.dueDate ?? null,
         createdAt: now,
         updatedAt: now,
       };
@@ -59,6 +86,7 @@ export function createStore() {
         ...existing,
         ...(patch.title !== undefined && { title: patch.title.trim() }),
         ...(patch.status !== undefined && { status: patch.status }),
+        ...(patch.dueDate !== undefined && { dueDate: patch.dueDate }),
         updatedAt: new Date().toISOString(),
       };
       tasks.set(id, updated);
