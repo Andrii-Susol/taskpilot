@@ -1,23 +1,29 @@
-# CODEOWNERS - the LAST matching pattern wins. Patterns are case-sensitive.
-# All owners for a pattern MUST be on the same line.
-# Personal account: every owner is Andrii-Susol. In an organization you would use teams, e.g.
-#   /.github/workflows/   @my-org/platform-team @my-org/security-team
+# =============================================================================
+# CODEOWNERS - TaskPilot. Last matching pattern wins. Owners on ONE line.
+# Owners must have write access. No '!' negation, no [a-z] ranges, no '\#'.
+# =============================================================================
 
-# Global default
-*                         @Andrii-Susol
+# 1. Global default
+*                                  @Andrii-Susol
 
-# Governance and CI/CD (agents must not change these)
-/.github/workflows/       @Andrii-Susol
-/.github/agents/          @Andrii-Susol
-/.github/CODEOWNERS       @Andrii-Susol
-/SECURITY.md              @Andrii-Susol
+# 2. Application code
+/src/                              @Andrii-Susol
+/tests/                            @Andrii-Susol
+/scripts/                          @Andrii-Susol
 
-# Application source
-/src/                     @Andrii-Susol
+# 3. Agent sandbox: OWNERSHIP RESET (no owner listed).
+#    PRs touching only this path need no code-owner approval - CI still applies.
+/src/experimental/
 
-# Agent memory and steering files are governance too
-/AGENTS.md                        @Andrii-Susol
-/.github/copilot-instructions.md  @Andrii-Susol
-/.github/instructions/            @Andrii-Susol
-/.github/skills/                  @Andrii-Susol
-/scripts/                         @Andrii-Susol
+# 4. ...but security-sensitive code inside the sandbox is owned again
+/src/experimental/secure/          @Andrii-Susol
+
+# 5. Agent memory and steering
+/AGENTS.md                         @Andrii-Susol
+/.github/copilot-instructions.md   @Andrii-Susol
+/.github/instructions/             @Andrii-Susol
+/.github/skills/                   @Andrii-Susol
+
+# 6. Governance and CI/CD (self-protecting: covers CODEOWNERS, workflows, agents, hooks)
+/.github/                          @Andrii-Susol
+/SECURITY.md                       @Andrii-Susol
