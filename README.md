@@ -11,7 +11,9 @@ A tiny, zero-dependency task API used as a hands-on GH-600 (agentic AI on GitHub
 |---|---|---|
 | GET | /health | Liveness check |
 | GET | /tasks[?status=] | List tasks |
-| POST | /tasks | Create `{ title, status? }` |
+| POST | /tasks | Create `{ title, status?, dueDate? }` |
 | GET/PATCH/DELETE | /tasks/:id | Read / update / delete |
+
+**Full schema & examples:** see [docs/api-schema.md](docs/api-schema.md)
 
 Lab guides live in `docs/labs/`.
