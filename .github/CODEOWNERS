@@ -25,5 +25,6 @@
 /.github/skills/                   @Andrii-Susol
 
 # 6. Governance and CI/CD (self-protecting: covers CODEOWNERS, workflows, agents, hooks)
+/governance/                       @Andrii-Susol
 /.github/                          @Andrii-Susol
 /SECURITY.md                       @Andrii-Susol

@@ -1,0 +1,39 @@
+name: Deploy
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci
+      - run: npm test
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: production       # pauses here until a required reviewer approves; secrets released only after
+    steps:
+      - name: Simulated deploy (uses the environment secret without printing it)
+        env:
+          DEPLOY_KEY: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
+        run: |
+          if [ -z "$DEPLOY_KEY" ]; then echo "::error::PRODUCTION_DEPLOY_KEY not available"; exit 1; fi
+          echo "Deploy key received (${#DEPLOY_KEY} characters). Deploying ${GITHUB_SHA}..."
+          echo "Deployed ${GITHUB_SHA} to production." >> "$GITHUB_STEP_SUMMARY"
