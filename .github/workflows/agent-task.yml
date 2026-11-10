@@ -1,0 +1,74 @@
+name: Agent Task (guarded)
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Read-only task for the agent
+        required: true
+        default: "Summarise the error-handling strategy in src/app.js in 5 bullet points."
+      simulate_failure:
+        description: Inject an invalid CLI flag to test fail-fast + escalation (0 AI credits)
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+      - name: Install Copilot CLI
+        run: npm install -g @github/copilot
+      - name: Run agent (L3 - read-only tools, credit cap, bounded retries)
+        env:
+          COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+          TASK: ${{ inputs.task }}
+          MODEL: ${{ vars.LAB_MODEL || 'auto' }}
+          SIMULATE_FAILURE: ${{ inputs.simulate_failure }}
+          MAX_AI_CREDITS: "30"
+          MAX_RETRIES: "2"
+        run: |
+          extra=()
+          if [ "$SIMULATE_FAILURE" = "true" ]; then extra+=(--fast-mode); fi
+          .github/scripts/run-agent.sh "$TASK" --model "$MODEL" -s --no-auto-update \
+            --disable-builtin-mcps --available-tools 'view,grep,glob' --allow-tool 'read' "${extra[@]}"
+
+  escalate:
+    needs: run-agent
+    if: failure()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      issues: write
+    steps:
+      - name: Open a needs-human issue assigned to whoever triggered the run
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `needs-human: guarded agent task failed (run ${context.runId})`,
+              labels: ['needs-human'],
+              assignees: [context.actor],
+              body: [
+                'The guarded agent task failed and was stopped (fail-fast).',
+                '',
+                `- Run: ${run}`,
+                `- Triggered by: @${context.actor}`,
+                `- Commit: ${context.sha}`,
+                '',
+                'Follow docs/escalation-policy.md. Classify the failure (reasoning / tool misuse / context) before re-running.',
+              ].join('\n'),
+            });
