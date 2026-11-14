@@ -11,6 +11,6 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "@github/copilot-sdk": "^1.0.28"
+    "@github/copilot-sdk": "^1.0.31"
   }
 }
